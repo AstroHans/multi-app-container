@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Multi-App Container</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font: inherit;
+            font-size: 100%;
+            vertical-align: baseline;
+            border: 0;
+            outline: none;
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 5px;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            height: 100vh;
+        }
+        .main-content {
+            height: 100%;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+        }
+        .app-selector {
+            background: white;
+            padding: 5px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .app-selector h2 {
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 14px;
+        }
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 4px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .app-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .app-item:hover {
+            background-color: #f8f9fa;
+        }
+        .app-item img {
+            width: 14px;
+            height: 14px;
+            margin-right: 6px;
+        }
+        .app-item span {
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 4px;
+            flex: 1;
+            overflow: hidden;
+            padding: 2px;
+        }
+        .app-frame {
+            background: white;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+            min-height: 200px;
+        }
+        .app-header {
+            padding: 3px 4px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 24px;
+        }
+        .app-title {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: bold;
+            color: #333;
+            font-size: 11px;
+        }
+        .app-icon {
+            width: 14px;
+            height: 14px;
+        }
+        .app-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .delete-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 2px;
+            color: #dc3545;
+            font-size: 12px;
+        }
+        .delete-button:hover {
+            color: #c82333;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            font-size: 12px;
+        }
+        /* Scrollbar-Stil */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="app-selector">
+            <h2>Apps hinzufügen</h2>
+            <div class="app-list" id="appList">
+                <!-- Apps werden durch JavaScript hinzugefügt -->
+            </div>
+        </div>
+        <div class="app-grid" id="appGrid">
+            <div class="empty-state">Wählen Sie eine App aus der Liste oben aus</div>
+        </div>
+    </div>
+
+    <script>
+        // Liste der verfügbaren Apps
+        const availableApps = [
+            { url: 'https://web.whatsapp.com', name: 'WhatsApp Web', icon: 'https://web.whatsapp.com/favicon.ico' },
+            { url: 'https://web.telegram.org', name: 'Telegram Web', icon: 'https://web.telegram.org/favicon.ico' },
+            { url: 'https://mail.yahoo.com', name: 'Yahoo Mail', icon: 'https://mail.yahoo.com/favicon.ico' },
+            { url: 'https://www.gmx.net', name: 'GMX', icon: 'https://www.gmx.net/favicon.ico' },
+            { url: 'https://www.chess.com', name: 'Chess.com', icon: 'https://www.chess.com/favicon.ico' },
+            { url: 'https://www.youtube.com', name: 'YouTube', icon: 'https://www.youtube.com/favicon.ico' },
+            { url: 'https://www.instagram.com', name: 'Instagram', icon: 'https://www.instagram.com/favicon.ico' },
+            { url: 'https://www.booking.com', name: 'Booking.com', icon: 'https://www.booking.com/favicon.ico' },
+            { url: 'https://www.google.com/maps', name: 'Google Maps', icon: 'https://www.google.com/maps/favicon.ico' },
+            { url: 'https://www.facebook.com', name: 'Facebook', icon: 'https://www.facebook.com/favicon.ico' },
+            { url: 'https://www.willhaben.at', name: 'Willhaben', icon: 'https://www.willhaben.at/favicon.ico' },
+            { url: 'https://www.temu.com', name: 'Temu', icon: 'https://www.temu.com/favicon.ico' },
+            { url: 'https://signal.org', name: 'Signal', icon: 'https://signal.org/favicon.ico' },
+            { url: 'https://www.mein-elba.at', name: 'Mein ELBA', icon: 'https://www.mein-elba.at/favicon.ico' }
+        ];
+
+        // Apps zur Auswahlliste hinzufügen
+        function populateAppList() {
+            const appList = document.getElementById('appList');
+            availableApps.forEach(app => {
+                const appItem = document.createElement('div');
+                appItem.className = 'app-item';
+                appItem.innerHTML = `
+                    <img src="${app.icon}" alt="${app.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22><path fill=%22%23ccc%22 d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z%22/></svg>'">
+                    <span>${app.name}</span>
+                `;
+                appItem.addEventListener('click', () => addApp(app));
+                appList.appendChild(appItem);
+            });
+        }
+
+        // App zum Grid hinzufügen
+        function addApp(app) {
+            // Entferne die Empty-State-Nachricht, falls vorhanden
+            const emptyState = document.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const appFrame = document.createElement('div');
+            appFrame.className = 'app-frame';
+            appFrame.innerHTML = `
+                <div class="app-header">
+                    <div class="app-title">
+                        <img src="${app.icon}" class="app-icon" alt="${app.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22><path fill=%22%23ccc%22 d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z%22/></svg>'">
+                        ${app.name}
+                    </div>
+                    <button class="delete-button" onclick="removeApp(this)">×</button>
+                </div>
+                <div class="app-content">
+                    <iframe src="${app.url}" class="app-iframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+                </div>
+            `;
+
+            document.getElementById('appGrid').appendChild(appFrame);
+        }
+
+        function removeApp(button) {
+            const appFrame = button.closest('.app-frame');
+            appFrame.remove();
+
+            // Zeige Empty-State-Nachricht an, wenn keine Apps mehr vorhanden sind
+            if (document.querySelectorAll('.app-frame').length === 0) {
+                const appGrid = document.getElementById('appGrid');
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.textContent = 'Wählen Sie eine App aus der Liste oben aus';
+                appGrid.appendChild(emptyState);
+            }
+        }
+
+        // App-Liste beim Laden der Seite initialisieren
+        window.addEventListener('DOMContentLoaded', populateAppList);
+    </script>
+</body>
+</html> 
