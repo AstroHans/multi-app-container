@@ -151,6 +151,35 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+        @media (max-width: 768px) {
+            body {
+                padding: 2px;
+            }
+            .app-selector {
+                padding: 3px;
+            }
+            .app-list {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                max-height: 80px;
+            }
+            .app-grid {
+                grid-template-columns: 1fr;
+                gap: 3px;
+            }
+            .app-frame {
+                height: calc(100vh - 100px);
+            }
+            .app-header {
+                height: 20px;
+            }
+            .app-title {
+                font-size: 10px;
+            }
+            .app-icon {
+                width: 12px;
+                height: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -169,19 +198,12 @@
     <script>
         // Liste der verfügbaren Apps
         const availableApps = [
-            { url: 'https://web.whatsapp.com', name: 'WhatsApp Web', icon: 'https://web.whatsapp.com/favicon.ico' },
-            { url: 'https://web.telegram.org', name: 'Telegram Web', icon: 'https://web.telegram.org/favicon.ico' },
-            { url: 'https://mail.yahoo.com', name: 'Yahoo Mail', icon: 'https://mail.yahoo.com/favicon.ico' },
-            { url: 'https://www.gmx.net', name: 'GMX', icon: 'https://www.gmx.net/favicon.ico' },
-            { url: 'https://www.chess.com', name: 'Chess.com', icon: 'https://www.chess.com/favicon.ico' },
+            { url: 'https://www.google.com', name: 'Google', icon: 'https://www.google.com/favicon.ico' },
             { url: 'https://www.youtube.com', name: 'YouTube', icon: 'https://www.youtube.com/favicon.ico' },
-            { url: 'https://www.instagram.com', name: 'Instagram', icon: 'https://www.instagram.com/favicon.ico' },
             { url: 'https://www.booking.com', name: 'Booking.com', icon: 'https://www.booking.com/favicon.ico' },
             { url: 'https://www.google.com/maps', name: 'Google Maps', icon: 'https://www.google.com/maps/favicon.ico' },
-            { url: 'https://www.facebook.com', name: 'Facebook', icon: 'https://www.facebook.com/favicon.ico' },
             { url: 'https://www.willhaben.at', name: 'Willhaben', icon: 'https://www.willhaben.at/favicon.ico' },
             { url: 'https://www.temu.com', name: 'Temu', icon: 'https://www.temu.com/favicon.ico' },
-            { url: 'https://signal.org', name: 'Signal', icon: 'https://signal.org/favicon.ico' },
             { url: 'https://www.mein-elba.at', name: 'Mein ELBA', icon: 'https://www.mein-elba.at/favicon.ico' }
         ];
 
